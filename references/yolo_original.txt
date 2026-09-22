@@ -1,0 +1,112 @@
+cat > ~/yolo_gz_node.py << 'EOF'
+#!/usr/bin/env python3
+import os
+os.environ.setdefault('PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION', 'python')
+
+
+import numpy as np
+import cv2
+
+
+import gz.transport13 as gz_transport
+import gz.msgs10.image_pb2 as gz_image_pb2
+
+
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import Image as RosImage
+from ultralytics import YOLO
+
+
+GZ_TOPIC = '/world/baylands/model/x500_mono_cam_0/link/camera_link/sensor/camera/image'
+ROS_OUTPUT_TOPIC = '/yolo/image_annotated'
+MODEL_PATH = 'yolov8n.pt'
+CONFIDENCE = 0.05
+
+
+
+
+class YoloPublisher(Node):
+    def __init__(self):
+        super().__init__('yolo_gz_detector_node')
+        self.pub = self.create_publisher(RosImage, ROS_OUTPUT_TOPIC, 10)
+        self.get_logger().info(f'Dang load YOLO model: {MODEL_PATH}')
+        self.model = YOLO(MODEL_PATH)
+        self.frame_count = 0
+
+
+    def process_and_publish(self, frame_bgr):
+        results = self.model.predict(frame_bgr, conf=CONFIDENCE, verbose=False)
+        annotated = results[0].plot().astype('uint8')
+
+
+        h, w, ch = annotated.shape
+        msg = RosImage()
+        msg.height = h
+        msg.width = w
+        msg.encoding = 'bgr8'
+        msg.is_bigendian = 0
+        msg.step = ch * w
+        msg.data = annotated.tobytes()
+        msg.header.stamp = self.get_clock().now().to_msg()
+        self.pub.publish(msg)
+
+
+        self.frame_count += 1
+        if self.frame_count % 30 == 1:
+            self.get_logger().info(f'Da xu ly {self.frame_count} frame')
+
+
+
+
+def gz_image_to_bgr(gz_msg):
+    width = gz_msg.width
+    height = gz_msg.height
+    channels = 3
+    arr = np.frombuffer(gz_msg.data, dtype=np.uint8)
+    expected = width * height * channels
+    if arr.size < expected:
+        return None
+    arr = arr[:expected].reshape((height, width, channels))
+    return cv2.cvtColor(arr, cv2.COLOR_RGB2BGR)
+
+
+
+
+def main():
+    rclpy.init()
+    ros_node = YoloPublisher()
+    gz_node = gz_transport.Node()
+
+
+    def callback(msg):
+        frame = gz_image_to_bgr(msg)
+        if frame is not None:
+            ros_node.process_and_publish(frame)
+
+
+    ok = gz_node.subscribe(gz_image_pb2.Image, GZ_TOPIC, callback)
+    if not ok:
+        ros_node.get_logger().error(f'Khong the subscribe gz-transport topic: {GZ_TOPIC}')
+        rclpy.shutdown()
+        return
+
+
+    ros_node.get_logger().info(f'Da subscribe truc tiep gz-transport: {GZ_TOPIC}')
+    ros_node.get_logger().info(f'Publishing annotated image qua ROS2: {ROS_OUTPUT_TOPIC}')
+
+
+    try:
+        rclpy.spin(ros_node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        ros_node.destroy_node()
+        rclpy.shutdown()
+
+
+
+
+if __name__ == '__main__':
+    main()
+EOF

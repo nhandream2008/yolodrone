@@ -1,0 +1,29 @@
+name: Python quality
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit:
+    name: Pure Python regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile controller and offline tools
+        run: >-
+          python -m py_compile
+          avoid_fly.py obstacle_avoidance.py mission_control.py simulation_guard.py
+          sensor_fusion.py flight_log.py reproducibility.py
+          scripts/bao_cao_benchmark_sitl.py scripts/plot_slalom_replay.py
+
+      - name: Run deterministic unit and offline simulation tests
+        run: python -m unittest discover -s tests -v

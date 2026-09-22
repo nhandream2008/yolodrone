@@ -1,0 +1,20 @@
+# AI Drone - PX4 SITL + Gazebo + LiDAR + YOLO
+# Compatible with Python 3.11+ (tested on 3.14)
+
+# Core ML/CV
+ultralytics>=8.4.127
+opencv-python-headless>=4.10.0
+numpy>=1.26.0
+
+# Robotics/Drone
+mavsdk>=3.17.4
+
+# Visualization
+matplotlib>=3.10.9
+
+# ROS 2 (for YOLO live node - install in WSL Ubuntu)
+# rclpy>=2.0.0  # Install via: sudo apt install ros-humble-rclpy
+
+# Testing
+pytest>=8.0.0
+pytest-asyncio>=0.23.0

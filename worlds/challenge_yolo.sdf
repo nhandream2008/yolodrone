@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <!-- A static, deliberately mixed obstacle course.  It contains no flight path,
+       plugins, or controller hints: the vehicle only sees its normal LiDAR scan. -->
+  <world name="challenge_yolo">
+    <physics name="physics" type="ode"><max_step_size>0.004</max_step_size><real_time_factor>1.0</real_time_factor><real_time_update_rate>250</real_time_update_rate></physics>
+    <gravity>0 0 -9.8</gravity><magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field><atmosphere type="adiabatic"/>
+    <scene><grid>true</grid><ambient>0.6 0.6 0.6 1</ambient><background>0.65 0.80 0.95 1</background><shadows>true</shadows></scene>
+    <spherical_coordinates><surface_model>EARTH_WGS84</surface_model><world_frame_orientation>ENU</world_frame_orientation><latitude_deg>47.397971057728974</latitude_deg><longitude_deg>8.546163739800146</longitude_deg><elevation>0</elevation></spherical_coordinates>
+
+    <!-- Standard Gazebo free camera: mouse controlled, never follows the drone. -->
+    <gui fullscreen="0">
+      <plugin filename="MinimalScene" name="3D View"><gz-gui><title>3D View</title><property type="bool" key="showTitleBar">false</property><property type="string" key="state">docked</property></gz-gui><engine>ogre2</engine><scene>scene</scene><ambient_light>0.4 0.4 0.4</ambient_light><background_color>0.8 0.8 0.8</background_color></plugin>
+      <plugin filename="EntityContextMenuPlugin" name="Entity context menu"><gz-gui><property key="state" type="string">floating</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+      <plugin filename="GzSceneManager" name="Scene Manager"><gz-gui><property key="state" type="string">floating</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+      <plugin filename="InteractiveViewControl" name="Interactive view control"><gz-gui><property key="state" type="string">floating</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+      <plugin filename="SelectEntities" name="Select Entities"><gz-gui><property key="state" type="string">floating</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+    </gui>
+
+    <model name="ground_plane"><static>true</static><link name="link"><collision name="ground_collision"><geometry><plane><normal>0 0 1</normal><size>100 100</size></plane></geometry></collision><visual name="ground_visual"><geometry><plane><normal>0 0 1</normal><size>100 100</size></plane></geometry><material><ambient>0.32 0.38 0.32 1</ambient><diffuse>0.45 0.52 0.45 1</diffuse></material></visual></link></model>
+    <model name="takeoff_pad"><static>true</static><pose>0 0 0.003 0 0 0</pose><link name="link"><visual name="pad"><geometry><box><size>2.5 2.5 0.005</size></box></geometry><material><ambient>0.15 0.45 0.75 1</ambient><diffuse>0.15 0.45 0.75 1</diffuse></material></visual></link></model>
+
+    <!-- Five alternating one-sided gates: each gate forces a late side change.
+         Closed ends extend outside the 48 m run boundary, avoiding shortcuts. -->
+    <model name="challenge_gate_1"><static>true</static><pose>7 24 3.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>0.6 50 7</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.6 50 7</size></box></geometry><material><ambient>0.85 0.20 0.09 1</ambient><diffuse>0.92 0.25 0.10 1</diffuse></material></visual></link></model>
+    <model name="challenge_gate_2"><static>true</static><pose>13.5 -24 3.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>0.6 50 7</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.6 50 7</size></box></geometry><material><ambient>0.13 0.30 0.86 1</ambient><diffuse>0.20 0.42 0.96 1</diffuse></material></visual></link></model>
+    <model name="challenge_gate_3"><static>true</static><pose>20 24 3.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>0.6 50 7</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.6 50 7</size></box></geometry><material><ambient>0.85 0.20 0.09 1</ambient><diffuse>0.92 0.25 0.10 1</diffuse></material></visual></link></model>
+    <model name="challenge_gate_4"><static>true</static><pose>26.5 -24 3.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>0.6 50 7</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.6 50 7</size></box></geometry><material><ambient>0.13 0.30 0.86 1</ambient><diffuse>0.20 0.42 0.96 1</diffuse></material></visual></link></model>
+    <model name="challenge_gate_5"><static>true</static><pose>33 24 3.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>0.6 50 7</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.6 50 7</size></box></geometry><material><ambient>0.85 0.20 0.09 1</ambient><diffuse>0.92 0.25 0.10 1</diffuse></material></visual></link></model>
+
+    <!-- Offset barrier near the turn point: another LiDAR-only decision after
+         the last gate.  Its 1.6 m width leaves two real side corridors rather
+         than turning two nearby gate faces into a 2-D LiDAR dead end. -->
+    <model name="offset_barrier"><static>true</static><pose>38.5 0 2.2 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>0.8 1.6 4.4</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.8 1.6 4.4</size></box></geometry><material><ambient>0.95 0.72 0.08 1</ambient><diffuse>1.0 0.78 0.10 1</diffuse></material></visual></link></model>
+    <model name="finish_pad"><static>true</static><pose>42 0 0.004 0 0 0</pose><link name="link"><visual name="visual"><geometry><box><size>3 3 0.006</size></box></geometry><material><ambient>0.1 0.9 0.35 1</ambient><diffuse>0.1 0.9 0.35 1</diffuse></material></visual></link></model>
+
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/><plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/><plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/><plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"><render_engine>ogre2</render_engine></plugin><plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/><plugin filename="gz-sim-air-pressure-system" name="gz::sim::systems::AirPressure"/><plugin filename="gz-sim-navsat-system" name="gz::sim::systems::NavSat"/><plugin filename="gz-sim-magnetometer-system" name="gz::sim::systems::Magnetometer"/>
+  </world>
+</sdf>

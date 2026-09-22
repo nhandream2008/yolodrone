@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <world name="obstacle_yolo">
+    <physics name="physics" type="ode">
+      <max_step_size>0.004</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>250</real_time_update_rate>
+    </physics>
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type="adiabatic"/>
+    <scene>
+      <grid>true</grid><ambient>0.6 0.6 0.6 1</ambient>
+      <background>0.65 0.80 0.95 1</background><shadows>true</shadows>
+    </scene>
+    <light name="sun" type="directional">
+      <pose>0 0 100 0 0 0</pose><cast_shadows>true</cast_shadows>
+      <diffuse>0.9 0.9 0.9 1</diffuse><specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.3 0.3 -0.9</direction>
+      <attenuation><range>1000</range><constant>1</constant><linear>0</linear><quadratic>0</quadratic></attenuation>
+    </light>
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model><world_frame_orientation>ENU</world_frame_orientation>
+      <latitude_deg>47.397971057728974</latitude_deg><longitude_deg>8.546163739800146</longitude_deg>
+      <elevation>0</elevation>
+    </spherical_coordinates>
+
+    <!-- Standard Gazebo free camera. It never tracks or changes the drone. -->
+    <gui fullscreen="0">
+        <!-- The normal interactive 3D viewer is controlled by the mouse. -->
+      <plugin filename="MinimalScene" name="3D View">
+        <gz-gui><title>3D View</title><property type="bool" key="showTitleBar">false</property><property type="string" key="state">docked</property></gz-gui>
+        <engine>ogre2</engine><scene>scene</scene>
+        <ambient_light>0.4 0.4 0.4</ambient_light><background_color>0.8 0.8 0.8</background_color>
+      </plugin>
+      <plugin filename="EntityContextMenuPlugin" name="Entity context menu"><gz-gui><property key="state" type="string">floating</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+      <plugin filename="GzSceneManager" name="Scene Manager"><gz-gui><property key="state" type="string">floating</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+      <plugin filename="InteractiveViewControl" name="Interactive view control"><gz-gui><property key="state" type="string">floating</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+      <plugin filename="SelectEntities" name="Select Entities"><gz-gui><property key="state" type="string">floating</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+    </gui>
+
+    <!-- Local geometry only: this world requires no Fuel downloads. -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="ground_collision"><geometry><plane><normal>0 0 1</normal><size>100 100</size></plane></geometry></collision>
+        <visual name="ground_visual">
+          <geometry><plane><normal>0 0 1</normal><size>100 100</size></plane></geometry>
+          <material><ambient>0.32 0.38 0.32 1</ambient><diffuse>0.45 0.52 0.45 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="takeoff_pad">
+      <static>true</static><pose>0 0 0.003 0 0 0</pose>
+      <link name="link">
+        <visual name="pad"><geometry><box><size>2.5 2.5 0.005</size></box></geometry><material><ambient>0.15 0.45 0.75 1</ambient><diffuse>0.15 0.45 0.75 1</diffuse></material></visual>
+        <visual name="arrow"><pose>0.5 0 0.005 0 0 0</pose><geometry><box><size>0.8 0.15 0.005</size></box></geometry><material><ambient>1 1 1 1</ambient><diffuse>1 1 1 1</diffuse></material></visual>
+      </link>
+    </model>
+    <!-- First wall: near face X=8.5, lateral edges Y=+-4, top Z=7. -->
+    <model name="front_wall">
+      <static>true</static><pose>9 0 3.5 0 0 0</pose>
+      <link name="link">
+        <collision name="wall_collision"><geometry><box><size>1 8 7</size></box></geometry></collision>
+        <visual name="wall_visual"><geometry><box><size>1 8 7</size></box></geometry><material><ambient>0.8 0.18 0.08 1</ambient><diffuse>0.9 0.22 0.08 1</diffuse></material></visual>
+        <visual name="stripe"><pose>-0.505 0 0 0 0 0</pose><geometry><box><size>0.01 8 0.35</size></box></geometry><material><ambient>1 0.8 0.1 1</ambient><diffuse>1 0.8 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="second_obstacle">
+      <static>true</static><pose>17 -5 3 0 0 0</pose>
+      <link name="link">
+        <collision name="obstacle_collision"><geometry><box><size>3 3 6</size></box></geometry></collision>
+        <visual name="obstacle_visual"><geometry><box><size>3 3 6</size></box></geometry><material><ambient>0.15 0.3 0.85 1</ambient><diffuse>0.2 0.4 0.95 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="finish_pad">
+      <static>true</static><pose>24 0 0.004 0 0 0</pose>
+      <link name="link"><visual name="visual"><geometry><box><size>3 3 0.006</size></box></geometry><material><ambient>0.1 0.9 0.35 1</ambient><diffuse>0.1 0.9 0.35 1</diffuse></material></visual></link>
+    </model>
+
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"><render_engine>ogre2</render_engine></plugin>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+    <plugin filename="gz-sim-air-pressure-system" name="gz::sim::systems::AirPressure"/>
+    <plugin filename="gz-sim-navsat-system" name="gz::sim::systems::NavSat"/>
+    <plugin filename="gz-sim-magnetometer-system" name="gz::sim::systems::Magnetometer"/>
+    <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"/>
+    <plugin filename="gz-sim-air-speed-system" name="gz::sim::systems::AirSpeed"/>
+    <plugin filename="gz-sim-apply-link-wrench-system" name="gz::sim::systems::ApplyLinkWrench"/>
+  </world>
+</sdf>

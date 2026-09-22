@@ -1,0 +1,8 @@
+tmp/
+.venv/
+__pycache__/
+*.pyc
+models/*.pt
+logs/
+runs/
+*.egg-info/

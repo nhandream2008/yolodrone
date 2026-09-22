@@ -1,0 +1,4 @@
+YOLO26n pretrained COCO detection weights
+Source: https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n.pt
+SHA256: 9b09cc8bf347f0fc8a5f7657480587f25db09b34bf33b0652110fb03a8ad4fef
+Downloaded 2026-09-09. Model loading/inference not yet tested.

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <model name="x500_mono_lidar">
+    <!-- Preserve PX4's motors, sensors and 1280x960 forward RGB camera. -->
+    <include merge="true">
+      <uri>model://x500_mono_cam</uri>
+    </include>
+    <link name="avoidance_lidar_link">
+      <!-- Above the camera and rotors, aligned with body X forward / Y left. -->
+      <pose relative_to="base_link">0 0 0.30 0 0 0</pose>
+      <inertial>
+        <mass>0.075</mass>
+        <inertia>
+          <ixx>0.000075</ixx><iyy>0.000075</iyy><izz>0.000135</izz>
+          <ixy>0</ixy><ixz>0</ixz><iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <visual name="lidar_housing">
+        <geometry><cylinder><radius>0.06</radius><length>0.04</length></cylinder></geometry>
+        <material><ambient>0.05 0.15 0.20 1</ambient><diffuse>0.05 0.45 0.60 1</diffuse></material>
+      </visual>
+      <sensor name="avoidance_lidar" type="gpu_lidar">
+        <topic>/drone/lidar/scan</topic>
+        <pose>0 0 0.025 0 0 0</pose>
+        <update_rate>15</update_rate>
+        <always_on>true</always_on>
+        <visualize>false</visualize>
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>721</samples><resolution>1</resolution>
+              <min_angle>-3.141592653589793</min_angle>
+              <max_angle>3.141592653589793</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>1</samples><resolution>1</resolution>
+              <min_angle>0</min_angle><max_angle>0</max_angle>
+            </vertical>
+          </scan>
+          <range><min>0.15</min><max>20</max><resolution>0.01</resolution></range>
+        </lidar>
+      </sensor>
+    </link>
+    <joint name="avoidance_lidar_joint" type="fixed">
+      <parent>base_link</parent><child>avoidance_lidar_link</child>
+    </joint>
+  </model>
+</sdf>
