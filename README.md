@@ -231,29 +231,6 @@ Regression bao phủ:
 - CLI unified truyền tham số world/trục hành trình đúng;
 - alias tiếng Anh tương thích với tên tiếng Việt mới khi test/caller hiện có cần chúng.
 
-## Bảng đổi tên nội bộ
-
-Tên log, topic, API MAVSDK/ROS/Gazebo/PX4, option PowerShell đang công bố, SDF/world/model và cột log cũ không bị đổi. Các helper nội bộ sau dùng tên tiếng Việt không dấu; alias tiếng Anh chỉ được giữ tạm cho tương thích test/caller cũ.
-
-| Tên tiếng Anh cũ              | Tên tiếng Việt mới            | Ý nghĩa                                                       | File                                                   |
-| ----------------------------- | ----------------------------- | ------------------------------------------------------------- | ------------------------------------------------------ |
-| `course_motion`               | `tinh_chuyen_dong_hanh_trinh` | Đổi telemetry NED sang chuyển động theo trục hành trình world | [`avoid_fly.py`](avoid_fly.py)                         |
-| `ned_velocity`                | `doi_van_toc_sang_ned`        | Đổi lệnh tiến/phải thành vận tốc PX4 NED                      | [`avoid_fly.py`](avoid_fly.py)                         |
-| `reverse_course_yaw`          | `dao_huong_hanh_trinh`        | Đảo trục điều hướng 180° khi về Home                          | [`avoid_fly.py`](avoid_fly.py)                         |
-| `heading_error_deg`           | `tinh_sai_so_huong_do`        | Sai số yaw nhỏ nhất theo độ                                   | [`avoid_fly.py`](avoid_fly.py)                         |
-| `limit_horizontal`            | `gioi_han_van_toc_ngang`      | Giới hạn độ lớn vector vận tốc ngang                          | [`avoid_fly.py`](avoid_fly.py)                         |
-| `slew_horizontal`             | `gioi_han_gia_toc_ngang`      | Giới hạn biến thiên vector vận tốc ngang                      | [`avoid_fly.py`](avoid_fly.py)                         |
-| `altitude_hold_down_velocity` | `tinh_van_toc_giu_do_cao`     | Vòng giữ độ cao, output NED down                              | [`avoid_fly.py`](avoid_fly.py)                         |
-| `wait_for_health`             | `cho_trang_thai_san_sang`     | Chờ health/preflight PX4 bắt buộc                             | [`avoid_fly.py`](avoid_fly.py)                         |
-| `safe_speed`                  | `tinh_van_toc_an_toan`        | Tính vận tốc theo quãng phản ứng và phanh                     | [`obstacle_avoidance.py`](obstacle_avoidance.py)       |
-| `reaction_distance`           | `tinh_khoang_cach_phan_ung`   | Tính khoảng nhìn tối thiểu theo vận tốc                       | [`obstacle_avoidance.py`](obstacle_avoidance.py)       |
-| `_add_avoid_args`             | `_them_tham_so_tranh_vat_can` | Thêm tham số CLI LiDAR/PID                                    | [`scripts/unified_drone.py`](scripts/unified_drone.py) |
-| `_build_avoid_args`           | `_tao_tham_so_tranh_vat_can`  | Tạo namespace cho runner; alias cũ vẫn có                     | [`scripts/unified_drone.py`](scripts/unified_drone.py) |
-| `signal_group`                | `gui_tin_hieu_nhom`           | Gửi tín hiệu chỉ đến group của phiên SITL sở hữu              | [`scripts/sim_avoid.py`](scripts/sim_avoid.py)         |
-| `wait_for_group`              | `cho_nhom_tien_trinh`         | Chờ process group của phiên SITL kết thúc                     | [`scripts/sim_avoid.py`](scripts/sim_avoid.py)         |
-| `cleanup`                     | `don_dep_phien`               | Dọn process group phiên mô phỏng đã sở hữu                    | [`scripts/sim_avoid.py`](scripts/sim_avoid.py)         |
-| `prepare_session`             | `chuan_bi_phien`              | Tạo phiên SITL mới, không thay calibration/preflight stock    | [`scripts/sim_avoid.py`](scripts/sim_avoid.py)         |
-
 ## World và giới hạn nghiên cứu
 
 [`worlds/obstacle_yolo.sdf`](worlds/obstacle_yolo.sdf), [`worlds/slalom_yolo.sdf`](worlds/slalom_yolo.sdf) và [`worlds/challenge_yolo.sdf`](worlds/challenge_yolo.sdf) chỉ chứa hình học mô phỏng. Planner không đọc SDF/world hoặc tọa độ cổng.
